@@ -84,6 +84,9 @@ class BaseDatos
         }
         return $resp;
     }
+
+    //a diferencia de ejecutar que devuelve un booleano si fue correcta la consulta,
+    //aplico este metodo que devuelve el registro encontrado a partir de una consulta de busqueda.
     public function EjecutarConRetorno($consulta)
     {
         $resp = false;
@@ -100,6 +103,25 @@ class BaseDatos
         
         return $resp;
     }
+
+    /*devuelve todas las instancias que cumplen la condición de la consulta en lugar de solo una como EjecutarConRetorno. 
+    cada fila corresponde a una instancia encontrada, y cada columna será un campo de la instancia*/
+    public function EjecutarConRetornoBidimensional($consulta)
+{
+    $resp = false;
+    unset($this->ERROR);
+    $this->QUERY = $consulta;
+    
+    $result = mysqli_query($this->CONEXION, $consulta);
+    
+    if ($result) {
+        $resp = mysqli_fetch_all($result, MYSQLI_ASSOC); // Devuelve todos los resultados de la consulta como un array asociativo
+    } else {
+        $this->ERROR = mysqli_errno($this->CONEXION) . ": " . mysqli_error($this->CONEXION);
+    }
+    
+    return $resp;
+}
     /**
      * Devuelve un registro retornado por la ejecucion de una consulta
      * el puntero se despleza al siguiente registro de la consulta

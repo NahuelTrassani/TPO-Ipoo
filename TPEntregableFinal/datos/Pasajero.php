@@ -156,20 +156,20 @@ class Pasajero
     function agregarPasajero()
     {
 
-        echo "Indique el Dni del pasajero (numérico): ". "\n";
+        echo "Indique el Dni del pasajero (numérico): " . "\n";
         $dni = trim(fgets(STDIN));
         $respSql = $this->buscarPasajero($dni);
         if ($respSql) {
-            echo "el pasajero ya se encuentra cargado. VIAJE EN PASAJERO ES UN FK NO PRIMARY, POR LO TANTO NO PUEDO REPETIR EL DNI, POR ENDE EL PASAJERO NO PUEDE ESTAR EN MAS DE UN VIAJE.". "\n";
+            echo "el pasajero ya se encuentra cargado. VIAJE EN PASAJERO ES UN FK NO PRIMARY, POR LO TANTO NO PUEDO REPETIR EL DNI, POR ENDE EL PASAJERO NO PUEDE ESTAR EN MAS DE UN VIAJE." . "\n";
         } else {
 
-            echo "Indique el nombre del pasajero: ". "\n";
+            echo "Indique el nombre del pasajero: " . "\n";
             $nombre = trim(fgets(STDIN));
 
-            echo "Indique el apellido del pasajero: ". "\n";
+            echo "Indique el apellido del pasajero: " . "\n";
             $apellido = trim(fgets(STDIN));
 
-            echo "Indique el teléfono del pasajero: ". "\n";
+            echo "Indique el teléfono del pasajero: " . "\n";
             $telefono = fgets(STDIN);
 
             echo "SE BUSCARA EL VIAJE PARA INSERTAR AL PASAJERO." . "\n";
@@ -183,12 +183,12 @@ class Pasajero
                 $sql = $conx->insertarPasajero($dni, $nombre, $apellido, $telefono, $idViaje);
                 $respSql = $conx->Ejecutar($sql);
                 if ($respSql == 1) {
-                    echo "Pasajero cargado con éxito". "\n";
+                    echo "Pasajero cargado con éxito" . "\n";
                 } else {
-                    echo "Error insertando Pasajero". "\n";
+                    echo "Error insertando Pasajero" . "\n";
                 }
             } else {
-                echo "Error conectando a la bd". "\n";
+                echo "Error conectando a la bd" . "\n";
             }
         }
     }
@@ -220,13 +220,13 @@ class Pasajero
     function modificarPasajero($documento)
     {
 
-        echo "Indique el nombre del pasajero: ". "\n";
+        echo "Indique el nombre del pasajero: " . "\n";
         $nombre = trim(fgets(STDIN));
 
-        echo "Indique el apellido del pasajero: ". "\n";
+        echo "Indique el apellido del pasajero: " . "\n";
         $apellido = trim(fgets(STDIN));
 
-        echo "Indique el teléfono del pasajero: ". "\n";
+        echo "Indique el teléfono del pasajero: " . "\n";
         $telefono = fgets(STDIN);
 
         echo "SE BUSCARA EL VIAJE PARA INSERTAR AL PASAJERO." . "\n";
@@ -241,10 +241,41 @@ class Pasajero
             $sql = $conx->actualizarPasajero($documento, $nombre, $apellido, $telefono, $idViaje);
             $respSql = $conx->Ejecutar($sql);
             if ($respSql == 1) {
-                echo "Pasajero actualizado con éxito". "\n";
+                echo "Pasajero actualizado con éxito" . "\n";
             } else {
-                echo "Error en la actualización de pasajero". "\n";
+                echo "Error en la actualización de pasajero" . "\n";
             }
+        }
+    }
+
+    function eliminarPasajerosViaje($idViaje)
+    {
+       
+        $conx = new BaseDatos();
+        $resp = $conx->iniciar();
+        if ($resp == 1) {
+            $sql = "SELECT * FROM pasajero WHERE idviaje = $idViaje";
+            $pasajeros = $conx->EjecutarConRetornoBidimensional($sql);
+            if (count($pasajeros) == 0) {
+                // No hay pasajeros para eliminar, se devuelve true
+                return true;
+            }
+            //print_r($pasajeros);
+            $contBorrados = 0;
+            foreach ($pasajeros as $pasajero) {
+                $sql2 = $conx->eliminarPasajero($pasajero['pdocumento']);
+                $borroPasajero = $conx->Ejecutar($sql2);
+                if ($borroPasajero == 1) {
+                    $contBorrados++;
+                }
+            }
+            // Se compara la cantidad de pasajeros eliminados con la cantidad total de pasajeros
+            if ($contBorrados == count($pasajeros)) {
+                return true; // Se han eliminado todos los pasajeros
+            } else {
+                return false; // No se han podido eliminar todos los pasajeros
+            }
+
         }
     }
 }

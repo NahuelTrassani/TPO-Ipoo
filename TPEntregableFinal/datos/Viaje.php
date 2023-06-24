@@ -1,5 +1,5 @@
 <?php
-
+require_once "Pasajero.php";
 class Viaje
 {
     /**
@@ -165,7 +165,7 @@ class Viaje
         $this->costosAbonados = 0;
     }
 
- 
+
     public function cargarPasajeroVuelo($persona)
     {
         array_push($this->pasajeros, $persona);
@@ -175,44 +175,46 @@ class Viaje
         return $this->cantPasajeros < $this->cantMax;
     }
 
-    function agregarViaje($idEmpresa, $idResponsable)
+    function agregarViaje()
     {
+        echo "Debe indicar el id de la empresa y del responsable del viaje" . "\n";
+        echo "TENGA EN CUENTA QUE EL ID DEBE EXISTIR EN LA TABLA CORRESPONDIENTE PORQUE NO ESTOY VALIANDO QUE HAYA ERROR." . "\n";
+        //antes debo recuperar la empresa y el responsable.
+        echo "Empresa" . "\n";
+        $idEmpresa = trim(fgets(STDIN));
 
-        //setea los datos del vuelo
-        //echo "Indique el número del vuelo (numérico): " . "\n" . "¡ADVERTENCIA!: Si el valor ingresado no es numérico, el vuelo no podrá ser encontrado (validación pendiente de implementación):" . "\n";
-        //$id = fgets(STDIN);
+        echo "Responsable" . "\n";
+        $idResponsable = trim(fgets(STDIN));
 
-        echo "Indique el destino del viaje: ". "\n";
+        echo "Indique el destino del viaje: " . "\n";
         $destino = trim(fgets(STDIN));
-        /*
+
         echo "Indique la capacidad máxima de personas que tiene el viaje: ";
         $cantMax = fgets(STDIN);
-        */
-        echo "Indique el precio del viaje: ". "\n";
-        $costoViaje = fgets(STDIN);
 
-        //de aca saqué la carga del responsable.
+        echo "Indique el precio del viaje: " . "\n";
+        $costoViaje = fgets(STDIN);
 
         //conectarme a la bd para insertar el registro.
         $conx = new BaseDatos();
         $resp = $conx->iniciar();
         if ($resp == 1) {
-            $sql = $conx->insertarViaje($destino, 0, $idEmpresa, $idResponsable, $costoViaje);
+            $sql = $conx->insertarViaje($destino, $cantMax, $idEmpresa, $idResponsable, $costoViaje);
             $respSql = $conx->Ejecutar($sql);
             if ($respSql == 1) {
-                echo "Viaje cargado con éxito". "\n";
+                echo "Viaje cargado con éxito" . "\n";
             } else {
-                echo "Error insertando Viaje". "\n";
+                echo "Error insertando Viaje" . "\n";
             }
         } else {
-            echo "Error conectando a la bd". "\n";
+            echo "Error conectando a la bd" . "\n";
         }
     }
 
     function buscarViaje()
     {
 
-        echo "Ingrese el 'idViaje' que desea buscar: ". "\n";
+        echo "Ingrese el 'idViaje' que desea buscar: " . "\n";
         $idViaje = trim(fgets(STDIN));
 
         $conx = new BaseDatos();
@@ -226,42 +228,77 @@ class Viaje
                     print_r($respSql);
                     return $respSql;
                 } else {
-                    echo "No se encontró viaje para ese id". "\n";
+                    echo "No se encontró viaje para ese id" . "\n";
                 }
             } else {
-                echo "la consulta no se ejecutó correctamente". "\n";
+                echo "la consulta no se ejecutó correctamente" . "\n";
             }
-        
+
         }
     }
 
     public function modificarViaje()
     {
-        echo "Indique el nombre de la empresa que desea modificar" . "\n";
-        $nomEmpresa = trim(fgets(STDIN));
+        echo "Indique el id del viaje que desea modificar" . "\n";
+        $idViaje = trim(fgets(STDIN));
+
         $conx = new BaseDatos();
         $resp = $conx->iniciar();
         if ($resp == 1) {
-            $sql = $conx->buscarEmpresa($nomEmpresa);
+            $sql = $conx->buscarViaje($idViaje);
             $respSql = $conx->EjecutarConRetorno($sql);
             if ($respSql) {
-                echo "Ingrese un nuevo nombre para la empresa" . "\n";
-                $nomEmpresa = fgets(STDIN);
+                echo "Ingrese un nuevo destino para el viaje" . "\n";
+                $destino = fgets(STDIN);
 
-                echo "Nueva dirección de la empresa" . "\n";
-                $dirEmpresa = trim(fgets(STDIN));
+                echo "Indique la cantidad maxima de pasajeros" . "\n";
+                $cantMax = trim(fgets(STDIN));
 
-                $sql = $conx->actualizarEmpresa($respSql['idempresa'], $nomEmpresa, $dirEmpresa);
+                echo "Indique el id de la Empresa (Recuerde que no se validan los id referenciados que no existan en la tabla)" . "\n";
+                $idEmpresa = trim(fgets(STDIN));
+
+                echo "Indique el id del Responsable  (Recuerde que no se validan los id referenciados que no existan en la tabla)" . "\n";
+                $idResponsable = trim(fgets(STDIN));
+
+                echo "Indique el precio del viaje: " . "\n";
+                $costoViaje = fgets(STDIN);
+
+                $sql = $conx->actualizarViaje($respSql['idviaje'], $destino, $cantMax, $idEmpresa, $idResponsable, $costoViaje);
                 $respSql2 = $conx->Ejecutar($sql);
                 if ($respSql2 == 1) {
-                    echo "Actualización exitosa". "\n";
-
+                    echo "Actualización exitosa" . "\n";
                 } else {
-                    echo "Falló actualización". "\n";
+                    echo "Falló actualización" . "\n";
                 }
             }
         }
     }
+
+    public function eliminarViaje()
+    {
+        echo "POR UNA CUESTION DE INTEGRIDAD REFERENCIAL borro los pasajeros para eliminar el viaje." . "\n";
+        echo "Indique el id del viaje que desea eliminar" . "\n";
+        $idViaje = trim(fgets(STDIN));
+        $conx = new BaseDatos();
+        $resp = $conx->iniciar();
+        if ($resp == 1) {
+
+            //aca debo borrar los pasajeros antes que el viaje
+            $pasajero = new Pasajero();
+            $resp = $pasajero->eliminarPasajerosViaje($idViaje);
+            if ($resp) { //si borró todos los pasajeros del viaje avanza.
+                $sql = $conx->eliminarViaje($idViaje);
+                $borraIsOk = $conx->Ejecutar($sql);
+                if ($borraIsOk == 1) {
+                    echo "Se borró el viaje de manera exitosa" . "\n";
+                } else {
+                    echo "Falló el borrado del viaje" . "\n";
+                }
+
+            }
+        }
+    }
+
 }
 
 
@@ -269,7 +306,7 @@ class Viaje
 
 
 
-//codigo realizado para trabajar con colecciones, a partir de añadir una bd al sistema esto queda deprecado.
+//codigo realizado para trabajar con colecciones en el objeto TestViaje.php, a partir de añadir una bd al sistema esto queda deprecado.
 
 
 

@@ -1,33 +1,45 @@
 <?php
 
-include "datos/Viaje.php";
 include "datos/Pasajero.php";
+include "datos/Viaje.php";
 include "datos/ResponsableV.php";
 include "datos/PasajeroVip.php";
 include "datos/PasajeroEspecial.php";
 include "datos/BaseDatos.php";
 include "datos/Empresa.php";
 
-$listaViajes = array();
-$listaPasajeros = array();
-
 menu();
 
 function menu()
 {
-    echo "¡Bienvenido/a!" . "\n";
-    echo "Seleccione una opción para continuar: " . "\n" .
-        "║  1  ║ Cargar Empresa                      " . "\n" .
-        "║  2  ║ Modificar Empresa                      " . "\n" .
-        "║  3  ║ Eliminar Empresa                      " . "\n" .
-        "║  4  ║ Cargar Viaje                        " . "\n" .
-        "║  5  ║ Modificar Viaje                        " . "\n" .
-        "║  6  ║ Eliminar Viaje                        " . "\n" .
-        "║  7  ║ Buscar Viaje                        " . "\n" .
-        "║  8  ║ Cargar Chofer/Piloto                " . "\n" .
-        "║  9  ║ Cargar Pasajero                     " . "\n" .
-        "║  10  ║ Modificar Pasajero                  " . "\n" .
-        "║  11  ║ Buscar Pasajero                     " . "\n" .
+    echo "\n"."¡Bienvenido/a!" . "\n";
+    echo "Seleccione una opción para continuar: " . "\n" . "\n" .
+
+        "       ║       EMPRESA      ║" . "\n" .  "\n".
+
+        "║  1   ║ Cargar Empresa" . "\n" .
+        "║  2   ║ Modificar Empresa" . "\n" .
+        "║  3   ║ Eliminar Empresa" . "\n" ."\n".
+
+        "       ║        VIAJE        ║" . "\n" . "\n".
+
+        "║  4   ║ Cargar Viaje" . "\n" .
+        "║  5   ║ Modificar Viaje" . "\n" .
+        "║  6   ║ Eliminar Viaje" . "\n" .
+        "║  7   ║ Buscar Viaje" . "\n" ."\n".
+
+        "       ║      RESPONSABLE     ║" . "\n" . "\n".
+
+        "║  8   ║ Cargar Chofer/Piloto" . "\n" ."\n".
+
+        "       ║        PASAJERO       ║" . "\n" . "\n".
+
+        "║  9   ║ Cargar Pasajero" . "\n" .
+        "║  10  ║ Modificar Pasajero" . "\n" .
+        "║  11  ║ Buscar Pasajero" . "\n" ."\n".
+       
+        
+        "     ║         SALIR        ║" . "\n" . "\n".
         "║  0  ║ Salir                               " . "\n";
     $opcion = fgets(STDIN);
 
@@ -56,31 +68,20 @@ function menu()
             break;
         case 4:
             echo "eligió la opción 'Cargar Viaje'" . "\n";
-
-            echo "Debe indicar el id de la empresa y del responsable del viaje" . "\n";
-            echo "TENGA EN CUENTA QUE EL ID DEBE EXISTIR EN LA TABLA CORRESPONDIENTE PORQUE NO ESTOY VALIANDO QUE HAYA ERROR." . "\n";
-            //cargar viaje
             $viaje = new Viaje();
-
-            //antes debo recuperar la empresa y el responsable.
-            echo "Empresa" . "\n";
-            $idEmpresa = trim(fgets(STDIN));
-
-            echo "Responsable" . "\n";
-            $idResponsable = trim(fgets(STDIN));
-
-            $viaje->agregarViaje($idEmpresa, $idResponsable);
-            //$listaViajes = agregarViaje($listaViajes);
+            $viaje->agregarViaje();
             menu();
             break;
         case 5:
             echo "eligió la opción 'Modificar Viaje'" . "\n";
-
+            $viaje = new Viaje();
+            $viaje->modificarViaje();
             menu();
             break;
         case 6:
             echo "eligió la opción 'Eliminar Viaje'" . "\n";
-
+            $viaje = new Viaje();
+            $viaje->eliminarViaje();
             menu();
             break;
         case 7:
