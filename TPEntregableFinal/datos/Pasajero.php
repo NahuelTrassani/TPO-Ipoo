@@ -1,6 +1,7 @@
 <?php
 
-class Pasajero{
+class Pasajero
+{
     private $dni;
     private $nombre;
     private $apellido;
@@ -13,130 +14,238 @@ class Pasajero{
     //GETTERS
     // 
 
-  public function darPorcentajeIncremento() {
-      return 10; // Porcentaje de incremento para pasajeros comunes
-  }
-    
-     //recupera dni
-     public function __toString() {
-      return "{$this->dni}{$this->nombre}{$this->apellido}";
-     }
-     public function getVuelo(){
-      return $this->nroVuelo;
-  }
-    public function getDni(){
-      return $this->dni;
-  }
+    public function darPorcentajeIncremento()
+    {
+        return 10; // Porcentaje de incremento para pasajeros comunes
+    }
 
-   // recupera nombre
-  
-  public function getNombre(){
-      return $this->nombre;
-  }
+    //recupera dni
+    public function __toString()
+    {
+        return "{$this->dni}{$this->nombre}{$this->apellido}";
+    }
+    public function getVuelo()
+    {
+        return $this->nroVuelo;
+    }
+    public function getDni()
+    {
+        return $this->dni;
+    }
 
- 
-   // recupera apellido
-  
-  public function getApellido(){
-      return $this->apellido;
-  }
+    // recupera nombre
 
-  
-  // recupera telefono
-  
-  public function getTelefono(){
-      return $this->telefono;
-  }
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
 
 
+    // recupera apellido
 
-  //
-  //SETTERS
-  // 
+    public function getApellido()
+    {
+        return $this->apellido;
+    }
+
+
+    // recupera telefono
+
+    public function getTelefono()
+    {
+        return $this->telefono;
+    }
+
+
+
+    //
+    //SETTERS
+    // 
 
     //Establece el valor de documento
 
-    public function setDni($dni){
-      $this->dni = $dni;
-  }
+    public function setDni($dni)
+    {
+        $this->dni = $dni;
+    }
 
-  public function setVuelo($nroVuelo){
-    $this->nroVuelo = $nroVuelo;
+    public function setVuelo($nroVuelo)
+    {
+        $this->nroVuelo = $nroVuelo;
+    }
+    // Establece el valor de nombre
+
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+    }
+
+    // Establece el valor de apellido
+
+    public function setApellido($apellido)
+    {
+        $this->apellido = $apellido;
+    }
+
+
+    public function setTelefono($telefono)
+    {
+        $this->telefono = $telefono;
+    }
+
+    public function getNroVuelo()
+    {
+        return $this->nroVuelo;
+    }
+
+    public function setNroVuelo($nroVuelo)
+    {
+        $this->nroVuelo = $nroVuelo;
+    }
+
+    public function getNumeroAsiento()
+    {
+        return $this->numeroAsiento;
+    }
+
+    public function setNumeroAsiento($numeroAsiento)
+    {
+        $this->numeroAsiento = $numeroAsiento;
+    }
+
+    public function getNumeroTicket()
+    {
+        return $this->numeroTicket;
+    }
+
+    public function setNumeroTicket($numeroTicket)
+    {
+        $this->numeroTicket = $numeroTicket;
+    }
+
+    public function __construct()
+    {
+        $this->dni = 0;
+        $this->nombre = "";
+        $this->apellido = "";
+        $this->telefono = 0;
+        $this->nroVuelo = 0;
+        $this->numeroAsiento = 0;
+        $this->numeroTicket = 0;
+    }
+
+    /*
+       // declara variables tipo parametro-.
+         // @param string $nombre
+          // @param string $apellido
+         // @param int $documento
+         // @param int $telefono
+
+      //cargar persona
+      public function cargarPersona($dni, $nombre, $apellido, $telefono, $nroVuelo){		
+            $this->setDni($dni);
+            $this->setNombre($nombre);
+            $this->setApellido($apellido);
+            $this->setTelefono($telefono);
+            $this->setVuelo($nroVuelo);
+      }
+
+      */
+
+
+    function agregarPasajero()
+    {
+
+        echo "Indique el Dni del pasajero (numérico): ". "\n";
+        $dni = trim(fgets(STDIN));
+        $respSql = $this->buscarPasajero($dni);
+        if ($respSql) {
+            echo "el pasajero ya se encuentra cargado. VIAJE EN PASAJERO ES UN FK NO PRIMARY, POR LO TANTO NO PUEDO REPETIR EL DNI, POR ENDE EL PASAJERO NO PUEDE ESTAR EN MAS DE UN VIAJE.". "\n";
+        } else {
+
+            echo "Indique el nombre del pasajero: ". "\n";
+            $nombre = trim(fgets(STDIN));
+
+            echo "Indique el apellido del pasajero: ". "\n";
+            $apellido = trim(fgets(STDIN));
+
+            echo "Indique el teléfono del pasajero: ". "\n";
+            $telefono = fgets(STDIN);
+
+            echo "SE BUSCARA EL VIAJE PARA INSERTAR AL PASAJERO." . "\n";
+            echo "TENGA EN CUENTA QUE EL ID DEBE EXISTIR EN LA TABLA CORRESPONDIENTE PORQUE NO ESTOY VALIANDO QUE HAYA ERROR." . "\n";
+            $viaje = new Viaje();
+            $respSql = $viaje->buscarViaje();
+            $idViaje = $respSql['idviaje'];
+            $conx = new BaseDatos();
+            $resp = $conx->iniciar();
+            if ($resp == 1) {
+                $sql = $conx->insertarPasajero($dni, $nombre, $apellido, $telefono, $idViaje);
+                $respSql = $conx->Ejecutar($sql);
+                if ($respSql == 1) {
+                    echo "Pasajero cargado con éxito". "\n";
+                } else {
+                    echo "Error insertando Pasajero". "\n";
+                }
+            } else {
+                echo "Error conectando a la bd". "\n";
+            }
+        }
+    }
+
+    function buscarPasajero($documento)
+    {
+
+        $conx = new BaseDatos();
+        $resp = $conx->iniciar();
+        if ($resp == 1) {
+            $sql = $conx->buscarPasajero($documento);
+            $respSql = $conx->EjecutarConRetorno($sql);
+            if ($respSql !== false) {
+                // La consulta se ejecutó correctamente y se obtuvo un resultado
+                if (!empty($respSql)) { //si no está vacio muestra el pasajero encontrado, de lo contrario avisa que no coincide la busqueda.
+                    print_r($respSql);
+                    // $pasajero = $respSql['pdocumento'];
+
+                    return $respSql;
+                } else {
+                    echo "No se encontró pasajero para ese dni" . "\n";
+                }
+            } else {
+                echo "la consulta no se ejecutó correctamente" . "\n";
+            }
+        }
+    }
+
+    function modificarPasajero($documento)
+    {
+
+        echo "Indique el nombre del pasajero: ". "\n";
+        $nombre = trim(fgets(STDIN));
+
+        echo "Indique el apellido del pasajero: ". "\n";
+        $apellido = trim(fgets(STDIN));
+
+        echo "Indique el teléfono del pasajero: ". "\n";
+        $telefono = fgets(STDIN);
+
+        echo "SE BUSCARA EL VIAJE PARA INSERTAR AL PASAJERO." . "\n";
+        echo "TENGA EN CUENTA QUE EL ID DEBE EXISTIR EN LA TABLA CORRESPONDIENTE PORQUE NO ESTOY VALIANDO QUE HAYA ERROR." . "\n";
+        $viaje = new Viaje();
+        $respSql = $viaje->buscarViaje();
+        $idViaje = $respSql['idviaje'];
+
+        $conx = new BaseDatos();
+        $resp = $conx->iniciar();
+        if ($resp == 1) {
+            $sql = $conx->actualizarPasajero($documento, $nombre, $apellido, $telefono, $idViaje);
+            $respSql = $conx->Ejecutar($sql);
+            if ($respSql == 1) {
+                echo "Pasajero actualizado con éxito". "\n";
+            } else {
+                echo "Error en la actualización de pasajero". "\n";
+            }
+        }
+    }
 }
-  // Establece el valor de nombre
-
-  public function setNombre($nombre){
-      $this->nombre = $nombre;
-  }
-
-// Establece el valor de apellido
- 
-public function setApellido($apellido){
-  $this->apellido = $apellido;
-}
-
-
-  public function setTelefono($telefono){
-      $this->telefono = $telefono;
-  }
-
-  public function getNroVuelo()
-  {
-      return $this->nroVuelo;
-  }
-
-  public function setNroVuelo($nroVuelo)
-  {
-      $this->nroVuelo = $nroVuelo;
-  }
-
-  public function getNumeroAsiento()
-  {
-      return $this->numeroAsiento;
-  }
-
-  public function setNumeroAsiento($numeroAsiento)
-  {
-      $this->numeroAsiento = $numeroAsiento;
-  }
-
-  public function getNumeroTicket()
-  {
-      return $this->numeroTicket;
-  }
-
-  public function setNumeroTicket($numeroTicket)
-  {
-      $this->numeroTicket = $numeroTicket;
-  }
-
-  public function __construct($dni, $nombre, $apellido, $telefono, $nroVuelo,  $numeroAsiento, $numeroTicket) {
-    $this->dni = $dni;
-    $this->nombre = $nombre;
-    $this->apellido = $apellido;
-    $this->telefono = $telefono;
-    $this->nroVuelo = $nroVuelo;
-    $this->numeroAsiento = $numeroAsiento;
-    $this->numeroTicket = $numeroTicket;
-}
-
-/*
-   // declara variables tipo parametro-.
-	 // @param string $nombre
- 	 // @param string $apellido
-	 // @param int $documento
-	 // @param int $telefono
-
-  //cargar persona
-  public function cargarPersona($dni, $nombre, $apellido, $telefono, $nroVuelo){		
-		$this->setDni($dni);
-		$this->setNombre($nombre);
-		$this->setApellido($apellido);
-		$this->setTelefono($telefono);
-		$this->setVuelo($nroVuelo);
-  }
-
-  */
-}
-
 ?>

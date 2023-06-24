@@ -36,7 +36,8 @@ class BaseDatos
         return "\n" . $this->ERROR;
 
     }
-    public function getResult() {
+    public function getResult()
+    {
         return $this->RESULT;
     }
     /**
@@ -83,7 +84,22 @@ class BaseDatos
         }
         return $resp;
     }
-
+    public function EjecutarConRetorno($consulta)
+    {
+        $resp = false;
+        unset($this->ERROR);
+        $this->QUERY = $consulta;
+        
+        $result = mysqli_query($this->CONEXION, $consulta);
+        
+        if ($result) {
+            $resp = mysqli_fetch_assoc($result); // Devuelve el resultado de la consulta como un array asociativo
+        } else {
+            $this->ERROR = mysqli_errno($this->CONEXION) . ": " . mysqli_error($this->CONEXION);
+        }
+        
+        return $resp;
+    }
     /**
      * Devuelve un registro retornado por la ejecucion de una consulta
      * el puntero se despleza al siguiente registro de la consulta
@@ -109,24 +125,25 @@ class BaseDatos
     /**
      * Devuelve el id de un campo autoincrement utilizado como clave de una tabla
      * Retorna el id numerico del registro insertado, devuelve null en caso que la ejecucion de la consulta falle
-     *
+     *  Cuando la  clave de una tabla es un atributo autoincrement obtienes el valor luego de la inserción con la función devuelveIdEjecuta de la clase BaseDatos
      * @param string $consulta
      * @return int id de la tupla insertada
-     
-    public function devuelveIDInsercion($consulta){
+     */
+    public function devuelveIDInsercion($consulta)
+    {
         $resp = null;
         unset($this->ERROR);
         $this->QUERY = $consulta;
-        if ($this->RESULT = mysqli_query($this->CONEXION,$consulta)){
-           $id = mysqli_insert_id(); //no se q hace
-            $resp =  $id;
+        if ($this->RESULT = mysqli_query($this->CONEXION, $consulta)) {
+            $id = mysqli_insert_id($this->CONEXION);
+            $resp = $id;
         } else {
-            $this->ERROR =mysqli_errno( $this->CONEXION) . ": " . mysqli_error( $this->CONEXION);
-           
+            $this->ERROR = mysqli_errno($this->CONEXION) . ": " . mysqli_error($this->CONEXION);
+
         }
-    return $resp;
+        return $resp;
     }
-    */
+
 
     // Funciones para la tabla 'empresa'
 
@@ -153,9 +170,9 @@ class BaseDatos
         return $sql;
     }
 
-    function buscarEmpresa($id)
+    function buscarEmpresa($enombre)
     {
-        $sql = "SELECT * FROM empresa WHERE idempresa = $id";
+        $sql = "SELECT * FROM empresa WHERE enombre like '%$enombre%'";
         return $sql;
     }
 
