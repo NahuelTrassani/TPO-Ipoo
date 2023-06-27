@@ -282,7 +282,7 @@ class Viaje
         $conx = new BaseDatos();
         $resp = $conx->iniciar();
         if ($resp == 1) {
-            $sql = $conx->buscarViaje($idViaje);
+            $sql = $conx->buscarViaje($idViaje);//metodo de acceso a la bd
             $respSql = $conx->EjecutarConRetorno($sql);
             if ($respSql !== false) {
                 // La consulta se ejecutó correctamente y se obtuvo un resultado
@@ -364,7 +364,6 @@ class Viaje
             }
         }
     }
-
 }
 
 

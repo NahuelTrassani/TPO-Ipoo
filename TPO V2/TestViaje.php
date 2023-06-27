@@ -222,9 +222,11 @@ function menu($colEmpresas)
             echo "Ingrese el dni del pasajero que desea modificar" . "\n";
             $documento = trim(fgets(STDIN));
             $pasajero = new Pasajero();
-            $respSql = $pasajero->buscarPasajero($documento);
-            $dniPasj = $respSql['pdocumento'];
-            $pasajero->modificarPasajero($dniPasj);
+            $respSql = $pasajero->buscarPasajerov2($colEmpresas,$documento);
+            $dniPasj = $respSql->getDni();
+            $oldIdViaje = $respSql->getVuelo();
+            $colEmpresas = $pasajero->modificarPasajero($dniPasj,$oldIdViaje,$colEmpresas);
+            //print_r($colEmpresas);
             menu($colEmpresas);
             break;
         case 11:
@@ -232,7 +234,8 @@ function menu($colEmpresas)
             echo "Ingrese el dni del pasajero que desea buscar" . "\n";
             $documento = trim(fgets(STDIN));
             $pasajero = new Pasajero();
-            $pasajero->buscarPasajero($documento);
+            $respPasajero = $pasajero->buscarPasajerov2($colEmpresas,$documento);
+            echo "El pasajero encontrado: "."\n".$respPasajero."\n";
             menu($colEmpresas);
             break;
         default:
